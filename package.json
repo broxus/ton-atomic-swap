@@ -24,6 +24,9 @@
     "js-sha256": "^0.9.0",
     "mocha-logger": "^1.0.6",
     "moment": "^2.28.0",
-    "truffle": "^5.1.44"
+    "truffle": "^5.1.44",
+    "bitcoinjs-lib": "^5.1.6",
+    "btc-opcode": "0.0.1",
+    "minimist": "^1.2.0"
   }
 }
