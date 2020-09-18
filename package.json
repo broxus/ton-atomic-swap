@@ -1,7 +1,7 @@
 {
   "name": "broxus-ton-atomic-swap-proposal",
   "version": "1.0.0",
-  "description": "Set of smart contracts and additional tools for implemeting atomic swaps between Ethereum, TON and Bitcoin",
+  "description": "Set of smart contracts and additional tools for implementing atomic swaps between Ethereum, TON and Bitcoin",
   "main": "index.js",
   "directories": {
     "doc": "docs"

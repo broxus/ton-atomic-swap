@@ -24,12 +24,16 @@ On the picture bellow first network's asset is called **COIN1** and the second n
 Also, there're two actors - **Alice**, who has **X COIN1** and **Bob**, who has **Y COIN2**. Imagine, that **Alice** and **Bob** agreed
 to exchange their assets with **X / Y** rate. How can they do this without involving the third party?
 
+![Atomic swap formulation of the problem](./assets/img/AtomicSwapProblemFormulation.png)
+
 ### Atomic swap pipeline
 
 The HTLC contract can solve this problem. The idea is to lock the assets on the special smart contract with some secret key. After assets are locked, they can be revealed in only two ways:
 
-1. By providing the secret key. In this case, assets are send on the pre-defined address.
-2. If the secret key wasn't provided in within the agreed time period. In this case, assets are also send to the pre-defined address. 
+1. By providing the secret key. In this case, assets are send on the pre-defined address (target address).
+2. If the secret key wasn't provided in within the pre-defined time period. In this case, assets are send to the pre-defined address (backup address).
+
+![Atomic swap pipeline](./assets/img/AtomicSwapPipeline.png)
 
 First of all, **Alice** and **Bob** agree on the following:
 
@@ -37,21 +41,21 @@ First of all, **Alice** and **Bob** agree on the following:
 2. **Alice** provides one address for receiving **COIN2** and another address for refunding her **COIN1** in case the deal falls through. **Bob** do the same vice versa.
 3. **Alice** imagine some long hard-to-guess secret. After that she creates the HTLC smart contract with the following details:
 
-- Amount - How much **COIN1** should be locked
-- Target address (aka targetBob) - On which address **COIN1** should be send in case of successful swap (Address controlled by **Bob**)
-- Backup address (aka backupAlice) - On which address **COIN1** should be send in case the deal falls through (Address controlled by **Alice**)
-- Hashed secret key - the hash of the secret key. At the time of creating the contract, this key is known only to **Alice**
-- Time lock - how long must it take before **Alice** can collect the money back, in case no one provided the correct secret key. Let's say the time lock is equal to 48 hours.
+    - Swap amount - How much **COIN1** should be locked
+    - Target address (aka targetBob) - On which address **COIN1** should be send in case of successful swap (Address controlled by **Bob**)
+    - Backup address (aka backupAlice) - On which address **COIN1** should be send in case the deal falls through (Address controlled by **Alice**)
+    - Hashed secret key - the hash of the secret key. At the time of creating the contract, this key is known only to **Alice**
+    - Time lock - how long must it take before **Alice** can collect the money back, in case no one provided the correct secret key. Let's say the time lock is equal to 48 hours.
 
 4. **Alice** deposit the **X COIN** to the smart contract and send the smart contract address to **Bob**
 5. Since the data in the blockchain is available to everyone, **Bob** verifies the **Alice's** smart contract.
 6. **Bob** extracts the Hashed secret key from the **Alice's** smart contract and also creates HTLC contract with the following parameters:
 
-- Amount - How much **COIN2** should be locked
-- Target address (aka targetAlice) - On which address **COIN2** should be send in case of successful swap (Address controlled by **Alice**)
-- Backup address (aka backupBob) - On which address **COIN2** should be send in case the deal falls through (Address controlled by **Bob**)
-- Hashed secret key - the hash, specified by the **Alice** in her HTLC contract
-- Time lock - how long must it take before **Bob** can collect the money back, in case no one provided the correct secret key. **Important:** the **Bob's** time lock should expire earlier than **Alice's**. Let's it's equal to the 24 hours.
+    - Amount - How much **COIN2** should be locked
+    - Target address (aka targetAlice) - On which address **COIN2** should be send in case of successful swap (Address controlled by **Alice**)
+    - Backup address (aka backupBob) - On which address **COIN2** should be send in case the deal falls through (Address controlled by **Bob**)
+    - Hashed secret key - the hash, specified by the **Alice** in her HTLC contract
+    - Time lock - how long must it take before **Bob** can collect the money back, in case no one provided the correct secret key. **Important:** the **Bob's** time lock should expire earlier than **Alice's**. Let's it's equal to the 24 hours.
 
 7. **Bob** deposit the **Y COIN2** to the smart contract and send the smart contract address to **Alice**
 8. **Alice** unlocks the **Bob's** smart contract by using her secret key. Since **Bob** used the correct hash, **Alice** secret key should fit and **Y COIN2** will be sent to the targetAlice.
