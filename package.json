@@ -1,0 +1,29 @@
+{
+  "name": "broxus-ton-atomic-swap-proposal",
+  "version": "1.0.0",
+  "description": "Set of smart contracts and additional tools for implemeting atomic swaps between Ethereum, TON and Bitcoin",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bitcoin",
+    "ethereum",
+    "ton"
+  ],
+  "author": "pavlovdog_ <pavlovdog.moscow@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "bignumber.js": "^9.0.0",
+    "bip39": "^3.0.2",
+    "crypto": "^1.0.1",
+    "ganache-cli": "^6.10.2",
+    "js-sha256": "^0.9.0",
+    "mocha-logger": "^1.0.6",
+    "moment": "^2.28.0",
+    "truffle": "^5.1.44"
+  }
+}

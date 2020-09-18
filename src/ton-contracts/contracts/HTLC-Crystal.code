@@ -1,0 +1,1466 @@
+.globl	constructor
+.public	constructor
+.type	constructor, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7_with_init_storage$
+}
+IF
+;; constructor protection
+GETGLOB 6
+THROWIF 51
+PUSHINT 1
+SETGLOB 6
+;; end constructor protection
+; Decode input parameters
+; Decode _target
+LDMSGADDR
+; Decode _backup
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode _platform
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode _feeAmount
+LDUQ 128
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+IFNOT
+; Decode _amount
+LDUQ 128
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+IFNOT
+; Decode _timeLock
+LDUQ 256
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+; Decode _hashedSecret
+LDUQ 256
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+ENDS
+;; param: _target
+;; param: _backup
+;; param: _platform
+;; param: _feeAmount
+;; param: _amount
+;; param: _timeLock
+;; param: _hashedSecret
+; constructor NativeHTLC
+ACCEPT
+;; push identifier _timeLock
+PUSH S1
+CALL $futureTimeLock_internal$
+; expValue
+; end expValue
+;; push identifier _target
+PUSH S6
+; colValue
+SETGLOB 10
+; end colValue
+; expValue
+; end expValue
+;; push identifier _backup
+PUSH S5
+; colValue
+SETGLOB 11
+; end colValue
+; expValue
+; end expValue
+;; push identifier _platform
+PUSH S4
+; colValue
+SETGLOB 12
+; end colValue
+; expValue
+; end expValue
+;; push identifier _feeAmount
+PUSH S3
+; colValue
+SETGLOB 13
+; end colValue
+; expValue
+; end expValue
+;; push identifier _amount
+PUSH S2
+; colValue
+SETGLOB 14
+; end colValue
+; expValue
+; end expValue
+;; push identifier _timeLock
+PUSH S1
+; colValue
+SETGLOB 17
+; end colValue
+; expValue
+; end expValue
+;; push identifier _hashedSecret
+DUP
+; colValue
+SETGLOB 15
+; end colValue
+BLKDROP 7
+; end constructor NativeHTLC
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	futureTimeLock_internal
+.type	futureTimeLock_internal, @function
+;; param: _time
+; function futureTimeLock
+;; push identifier _time
+DUP
+;; push identifier now
+NOW
+;; >
+GREATER
+THROWIFNOT 100
+DROP
+; end function futureTimeLock
+
+.globl	secretHashMatches_internal
+.type	secretHashMatches_internal, @function
+;; param: _rawSecret
+; function secretHashMatches
+;; push identifier hashedSecret
+GETGLOB 15
+NEWC
+;; index
+PUSHINT 0
+;; push identifier _rawSecret
+PUSH S3
+INDEX 1
+PUSHINT 32
+DICTUGET
+THROWIFNOT 50
+PLDU 256
+STUR 256
+;; index
+PUSHINT 1
+;; push identifier _rawSecret
+PUSH S3
+INDEX 1
+PUSHINT 32
+DICTUGET
+THROWIFNOT 50
+PLDU 256
+STUR 256
+ENDC
+CTOS
+SHA256U
+;; uint
+UFITS 256
+;; ==
+EQUAL
+THROWIFNOT 100
+DROP
+; end function secretHashMatches
+
+.globl	withdraw
+.public	withdraw
+.type	withdraw, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+; Decode _rawSecret
+LDU 32
+LDDICT
+ROTREV
+PAIR
+SWAP
+ENDS
+;; param: _rawSecret
+; modifier fundsSent
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier amount
+GETGLOB 14
+;; >=
+GEQ
+THROWIFNOT 100
+; modifier withdrawable
+;; push identifier withdrawn
+GETGLOB 18
+FALSE
+;; ==
+EQUAL
+THROWIFNOT 100
+; function withdraw
+;; push identifier _rawSecret
+DUP
+CALL $secretHashMatches_internal$
+ACCEPT
+; expValue
+; end expValue
+;; push identifier _rawSecret
+DUP
+; colValue
+SETGLOB 16
+; end colValue
+; expValue
+; end expValue
+TRUE
+; colValue
+SETGLOB 18
+; end colValue
+;; transfer()
+;; push identifier amount
+GETGLOB 14
+;; push identifier feeAmount
+GETGLOB 13
+;; -
+SUB
+UFITS 128
+;; push identifier target
+GETGLOB 10
+NEWC
+STSLICECONST x42_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 105
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 0
+SENDRAWMSG
+;; transfer()
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier amount
+GETGLOB 14
+;; -
+SUB
+UFITS 128
+;; push identifier feeAmount
+GETGLOB 13
+;; +
+ADD
+UFITS 128
+;; push identifier platform
+GETGLOB 12
+NEWC
+STSLICECONST x42_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 105
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 0
+SENDRAWMSG
+;; return
+TRUE
+;; emitting 1 value(s)
+PUSH S2
+EQINT -1
+PUSHCONT {
+	PUSH S4
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xa370db90
+	PUSH S1
+	STIR 1
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function withdraw
+; end modifier withdrawable
+DROP
+; end modifier fundsSent
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	withdraw_internal
+.type	withdraw_internal, @function
+;; param: _rawSecret
+; modifier fundsSent
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier amount
+GETGLOB 14
+;; >=
+GEQ
+THROWIFNOT 100
+; modifier withdrawable
+;; push identifier withdrawn
+GETGLOB 18
+FALSE
+;; ==
+EQUAL
+THROWIFNOT 100
+; function withdraw
+;; push identifier _rawSecret
+DUP
+CALL $secretHashMatches_internal$
+ACCEPT
+; expValue
+; end expValue
+;; push identifier _rawSecret
+DUP
+; colValue
+SETGLOB 16
+; end colValue
+; expValue
+; end expValue
+TRUE
+; colValue
+SETGLOB 18
+; end colValue
+;; transfer()
+;; push identifier amount
+GETGLOB 14
+;; push identifier feeAmount
+GETGLOB 13
+;; -
+SUB
+UFITS 128
+;; push identifier target
+GETGLOB 10
+NEWC
+STSLICECONST x42_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 105
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 0
+SENDRAWMSG
+;; transfer()
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier amount
+GETGLOB 14
+;; -
+SUB
+UFITS 128
+;; push identifier feeAmount
+GETGLOB 13
+;; +
+ADD
+UFITS 128
+;; push identifier platform
+GETGLOB 12
+NEWC
+STSLICECONST x42_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 105
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 0
+SENDRAWMSG
+;; return
+TRUE
+TUPLE 1
+SETGLOB 8
+; end function withdraw
+; end modifier withdrawable
+DROP
+; end modifier fundsSent
+GETGLOB 8
+UNTUPLE 1
+
+.globl	refund
+.public	refund
+.type	refund, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; modifier fundsSent
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier amount
+GETGLOB 14
+;; >=
+GEQ
+THROWIFNOT 100
+; modifier refundable
+;; push identifier refunded
+GETGLOB 19
+FALSE
+;; ==
+EQUAL
+THROWIFNOT 100
+;; push identifier withdrawn
+GETGLOB 18
+FALSE
+;; ==
+EQUAL
+THROWIFNOT 100
+;; push identifier timeLock
+GETGLOB 17
+;; push identifier now
+NOW
+;; <=
+LEQ
+THROWIFNOT 100
+; function refund
+ACCEPT
+; expValue
+; end expValue
+TRUE
+; colValue
+SETGLOB 19
+; end colValue
+;; transfer()
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier backup
+GETGLOB 11
+NEWC
+STSLICECONST x42_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 105
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 0
+SENDRAWMSG
+;; return
+TRUE
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x8463a384
+	PUSH S1
+	STIR 1
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function refund
+; end modifier refundable
+; end modifier fundsSent
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	refund_internal
+.type	refund_internal, @function
+; modifier fundsSent
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier amount
+GETGLOB 14
+;; >=
+GEQ
+THROWIFNOT 100
+; modifier refundable
+;; push identifier refunded
+GETGLOB 19
+FALSE
+;; ==
+EQUAL
+THROWIFNOT 100
+;; push identifier withdrawn
+GETGLOB 18
+FALSE
+;; ==
+EQUAL
+THROWIFNOT 100
+;; push identifier timeLock
+GETGLOB 17
+;; push identifier now
+NOW
+;; <=
+LEQ
+THROWIFNOT 100
+; function refund
+ACCEPT
+; expValue
+; end expValue
+TRUE
+; colValue
+SETGLOB 19
+; end colValue
+;; transfer()
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; push identifier backup
+GETGLOB 11
+NEWC
+STSLICECONST x42_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 105
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 0
+SENDRAWMSG
+;; return
+TRUE
+TUPLE 1
+SETGLOB 8
+; end function refund
+; end modifier refundable
+; end modifier fundsSent
+GETGLOB 8
+UNTUPLE 1
+
+.globl	getBalance
+.public	getBalance
+.type	getBalance, @function
+; Decode input parameters
+ENDS
+; function getBalance
+;; return
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xe8892e7d
+	PUSH S1
+	STUR 256
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getBalance
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getBalance_internal
+.type	getBalance_internal, @function
+; function getBalance
+;; return
+;; get member balance
+GETPARAM 7
+INDEX 0
+; end function getBalance
+
+.globl	getAmount
+.public	getAmount
+.type	getAmount, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getAmount
+;; return
+;; push identifier amount
+GETGLOB 14
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xa8746807
+	PUSH S1
+	STUR 256
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getAmount
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getAmount_internal
+.type	getAmount_internal, @function
+; function getAmount
+;; return
+;; push identifier amount
+GETGLOB 14
+; end function getAmount
+
+.globl	getHashedSecret
+.public	getHashedSecret
+.type	getHashedSecret, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getHashedSecret
+;; return
+;; push identifier hashedSecret
+GETGLOB 15
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xcfa0bdc5
+	PUSH S1
+	STUR 256
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getHashedSecret
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getHashedSecret_internal
+.type	getHashedSecret_internal, @function
+; function getHashedSecret
+;; return
+;; push identifier hashedSecret
+GETGLOB 15
+; end function getHashedSecret
+
+.globl	getTimeLock
+.public	getTimeLock
+.type	getTimeLock, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getTimeLock
+;; return
+;; push identifier timeLock
+GETGLOB 17
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xa16fc957
+	PUSH S1
+	STUR 256
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getTimeLock
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getTimeLock_internal
+.type	getTimeLock_internal, @function
+; function getTimeLock
+;; return
+;; push identifier timeLock
+GETGLOB 17
+; end function getTimeLock
+
+.globl	getWithdrawn
+.public	getWithdrawn
+.type	getWithdrawn, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getWithdrawn
+;; return
+;; push identifier withdrawn
+GETGLOB 18
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xfd9de2ba
+	PUSH S1
+	STIR 1
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getWithdrawn
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getWithdrawn_internal
+.type	getWithdrawn_internal, @function
+; function getWithdrawn
+;; return
+;; push identifier withdrawn
+GETGLOB 18
+; end function getWithdrawn
+
+.globl	getRefunded
+.public	getRefunded
+.type	getRefunded, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getRefunded
+;; return
+;; push identifier refunded
+GETGLOB 19
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xe63acf5a
+	PUSH S1
+	STIR 1
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getRefunded
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getRefunded_internal
+.type	getRefunded_internal, @function
+; function getRefunded
+;; return
+;; push identifier refunded
+GETGLOB 19
+; end function getRefunded
+
+.globl	getRawSecret
+.public	getRawSecret
+.type	getRawSecret, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+; Decode i
+LDU 256
+ENDS
+;; param: i
+; function getRawSecret
+;; return
+;; index
+;; push identifier i
+DUP
+;; push identifier rawSecret
+GETGLOB 16
+INDEX 1
+PUSHINT 32
+DICTUGET
+THROWIFNOT 50
+PLDU 256
+NIP
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x8166ac71
+	PUSH S1
+	STUR 256
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getRawSecret
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getRawSecret_internal
+.type	getRawSecret_internal, @function
+;; param: i
+; function getRawSecret
+;; return
+;; index
+;; push identifier i
+DUP
+;; push identifier rawSecret
+GETGLOB 16
+INDEX 1
+PUSHINT 32
+DICTUGET
+THROWIFNOT 50
+PLDU 256
+NIP
+; end function getRawSecret
+
+.globl	getTarget
+.public	getTarget
+.type	getTarget, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getTarget
+;; return
+;; push identifier target
+GETGLOB 10
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x8f537d88
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getTarget
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getTarget_internal
+.type	getTarget_internal, @function
+; function getTarget
+;; return
+;; push identifier target
+GETGLOB 10
+; end function getTarget
+
+.globl	getBackup
+.public	getBackup
+.type	getBackup, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getBackup
+;; return
+;; push identifier backup
+GETGLOB 11
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xa59b8bf6
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getBackup
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getBackup_internal
+.type	getBackup_internal, @function
+; function getBackup
+;; return
+;; push identifier backup
+GETGLOB 11
+; end function getBackup
+
+.globl	getPlatform
+.public	getPlatform
+.type	getPlatform, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getPlatform
+;; return
+;; push identifier platform
+GETGLOB 12
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xe1298176
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getPlatform
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getPlatform_internal
+.type	getPlatform_internal, @function
+; function getPlatform
+;; return
+;; push identifier platform
+GETGLOB 12
+; end function getPlatform
+
+.globl	c7_to_c4
+.type	c7_to_c4, @function
+GETGLOB 2
+NEWC
+STU 256
+GETGLOB 3
+STUR 64
+GETGLOB 6
+STUR 1
+NEWC
+GETGLOB 12
+GETGLOB 13
+GETGLOB 14
+GETGLOB 15
+REVERSE 5, 0
+STSLICE
+STU 128
+STU 128
+STU 256
+NEWC
+GETGLOB 17
+SWAP
+STU 256
+GETGLOB 10
+GETGLOB 11
+GETGLOB 16
+UNTUPLE 2
+GETGLOB 18
+GETGLOB 19
+REVERSE 9, 0
+STBREF
+STBREF
+STSLICE
+STSLICE
+STU 32
+STDICT
+STI 1
+STI 1
+ENDC
+POP C4
+
+.globl	c4_to_c7
+.type	c4_to_c7, @function
+PUSHROOT
+CTOS        ; c4
+LDU 256      ; pubkey c4
+LDU 64      ; pubkey timestamp c4
+LDU 1       ; pubkey [timestamp] constructor_flag memory
+LDREFRTOS
+LDMSGADDR
+LDU 128
+LDU 128
+PLDU 256
+SETGLOB 15
+SETGLOB 14
+SETGLOB 13
+SETGLOB 12
+LDREFRTOS
+PLDU 256
+SETGLOB 17
+LDMSGADDR
+LDMSGADDR
+LDU 32
+LDDICT
+ROTREV
+PAIR
+SETGLOB 16
+LDI 1
+PLDI 1
+SETGLOB 19
+SETGLOB 18
+SETGLOB 11
+SETGLOB 10
+TRUE
+SETGLOB 1   ; pubkey [timestamp] constructor_flag
+SETGLOB 6   ; pubkey [timestamp]
+SETGLOB 3   ; D
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS        ; c4
+DUP        ; c4 c4
+SBITS      ; c4 bits
+GTINT 1    ; c4 bits>1
+PUSHCONT {
+	LDU 256      ; pubkey c4
+	LDU 64      ; pubkey timestamp c4
+	LDU 1       ; pubkey [timestamp] constructor_flag memory
+	LDREFRTOS
+	LDMSGADDR
+	LDU 128
+	LDU 128
+	PLDU 256
+	SETGLOB 15
+	SETGLOB 14
+	SETGLOB 13
+	SETGLOB 12
+	LDREFRTOS
+	PLDU 256
+	SETGLOB 17
+	LDMSGADDR
+	LDMSGADDR
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SETGLOB 16
+	LDI 1
+	PLDI 1
+	SETGLOB 19
+	SETGLOB 18
+	SETGLOB 11
+	SETGLOB 10
+	TRUE
+	SETGLOB 1   ; pubkey [timestamp] constructor_flag
+	SETGLOB 6   ; pubkey [timestamp]
+	SETGLOB 3   ; D
+	SETGLOB 2
+}
+PUSHCONT {
+	PLDDICT   ; D
+	; init target
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 10
+	; init backup
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 11
+	; init platform
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 12
+	; init feeAmount
+	PUSHINT 0
+	SETGLOB 13
+	; init amount
+	PUSHINT 0
+	SETGLOB 14
+	; init hashedSecret
+	PUSHINT 0
+	SETGLOB 15
+	; init rawSecret
+	PUSHINT 0
+	NEWDICT
+	PAIR
+	SETGLOB 16
+	; init timeLock
+	PUSHINT 0
+	SETGLOB 17
+	; init withdrawn
+	PUSHINT 0
+	SETGLOB 18
+	; init refunded
+	PUSHINT 0
+	SETGLOB 19
+	; set contract pubkey
+	PUSHINT 0
+	SWAP
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+	PUSHINT 0 ; constructor_flag
+	SETGLOB 6
+	TRUE
+	SETGLOB 1
+}
+IFELSE
+
+.internal-alias :main_internal,        0
+.internal	:main_internal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Function: main_internal
+;; param: contract_balance
+;; param: msg_balance
+;; param: int_msg_info
+;; param: msg_body_slice
+PUSHINT 0  ; main_external trans id
+PUSH S2
+CTOS
+LDSLICE 3
+NIP
+LDI 1     ; bounced tail
+DROP
+IFRET
+PUSH S1    ; body
+SEMPTY     ; isEmpty
+PUSHCONT {
+}
+IFJMP
+PUSH S1            ; body
+LDUQ 32            ; [funcId] body' ok
+PUSHCONT {
+	THROW 60
+}
+IFNOTJMP
+PUSH2 S1,S1        ; funcId body' funcId funcId
+PUSHCONT {
+}
+IFNOTJMP
+LESSINT 3            ; funcId body' funcId<3
+PUSH S2              ; funcId body' funcId<3 funcId
+PUSHINT 4294967293   ; funcId body' funcId<3 funcId 4294967293
+GREATER              ; funcId body' funcId<3 funcId>4294967293
+OR                   ; funcId body' funcId<3||funcId>4294967293
+PUSHCONT {
+	THROW 60
+}
+IFJMP
+SWAP  ; body' funcId
+CALL 1
+GETGLOB 7
+ISNULL
+PUSHCONT {
+	THROW 60
+}
+IF
+
+.internal-alias :main_external,        -1
+.internal	:main_external
+PUSHINT -1 ; main_external trans id
+PUSH S1
+CALL $c4_to_c7_with_init_storage$
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP      ; signatureSlice msgSlice msgSlice
+	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	ROT
+	GETGLOB 2
+	CHKSIGNU      ; msgSlice isSigned
+	THROWIFNOT 40 ; msgSlice
+}
+IF
+LDU 64                         ; timestamp msgSlice
+SWAP                           ; msgSlice timestamp
+CALL $replay_protection_macro$ ; msgSlice
+LDU 32  ; expireAt msgSlice
+SWAP    ; msgSlice expireAt
+NOW     ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU  32 ; funcId body
+PUSH S1 ; funcId body funcId
+LESSINT 3            ; funcId body' funcId<3
+PUSH S2              ; funcId body' funcId<3 funcId
+PUSHINT 4294967293   ; funcId body' funcId<3 funcId 4294967293
+GREATER              ; funcId body' funcId<3 funcId>4294967293
+OR                   ; funcId body' funcId<3||funcId>4294967293
+PUSHCONT {
+	THROW 60
+}
+IFJMP
+SWAP    ; body funcId
+CALL 1
+GETGLOB 7
+ISNULL
+PUSHCONT {
+	THROW 60
+}
+IF
+

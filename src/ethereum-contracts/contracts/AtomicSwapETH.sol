@@ -1,7 +1,6 @@
 pragma solidity ^0.5.4;
-pragma experimental ABIEncoderV2;
 
-import './../../../utils/SafeMath.sol';
+import './utils/SafeMath.sol';
 
 /**
  * @title Hashed Timelock Contracts (HTLCs) on Ethereum ETH.
