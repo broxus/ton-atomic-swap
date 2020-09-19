@@ -20,6 +20,8 @@
   "dependencies": {
     "bignumber.js": "^9.0.0",
     "bip39": "^3.0.2",
+    "bitcoinjs-lib": "^5.1.6",
+    "btc-opcode": "0.0.1",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "ganache-cli": "^6.10.2",
@@ -30,8 +32,7 @@
     "ton-client-js": "^0.26.1",
     "ton-client-node-js": "^0.26.1",
     "truffle": "^5.1.44",
-    "wait-console-input": "^0.1.7",
-    "bitcoinjs-lib": "^5.1.6",
-    "btc-opcode": "0.0.1"
+    "truffle-hdwallet-provider": "^1.0.17",
+    "wait-console-input": "^0.1.7"
   }
 }

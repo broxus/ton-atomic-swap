@@ -110,6 +110,80 @@ $ truffle test
 
 **Important:** to test the refund functionality, you should be able to manipulate the blockchain time. So, running this tests on the Mainnet / Ropsten / etc networks probably won't work.
 
+### Interact with Ethereum ETH / ERC20 smart contract
+
+At this section you can find an instruction for working with Ethereum HTLC contracts (ETH and ERC20 version). All the interactions are implemented in form of cli application at `src/ethereum-contracts/scripts/htlc-cli.js`. This CLI allows you to:
+
+- Deploy HTLC contract
+- Get the parameters and status of the HTLC contract
+- Withdraw from the HTLC contract, by providing the secret key
+
+#### Configure
+
+All the configuration for using the HTLC contract over the Ethereum network should be placed in the `/src/ethereum-contracts/.env` file. Copy & paste the template bellow and fill it with your details.
+
+```
+ETHEREUM_NODE_RPC=
+ETHEREUM_PRIVATE_KEY=
+ETHEREUM_NETWORK_ID=
+ETHEREUM_GAS_PRICE=
+
+ETHEREUM_HTLC_TARGET_ADDRESS=
+ETHEREUM_HTLC_BACKUP_ADDRESS=
+ETHEREUM_HTLC_PLATFORM_ADDRESS=
+ETHEREUM_HTLC_SWAP_AMOUNT=
+ETHEREUM_HTLC_FEE_AMOUNT=
+ETHEREUM_HTLC_TIME_LOCK=
+ETHEREUM_HTLC_SECRET_HASH=
+
+ETHEREUM_HTLC_TOKEN_ADDRESS=
+
+ETHEREUM_HTLC_ADDRESS=
+ETHEREUM_HTLC_SECRET_RAW=
+```
+
+**Important:** Specify `ETHEREUM_HTLC_TOKEN_ADDRESS` in case you deploying HTLC swap for ERC20 token. Leave it blank for ETH swap.
+
+#### Deploy
+
+1. Specify all environment parameters, except `ETHEREUM_HTLC_ADDRESS` and `ETHEREUM_HTLC_SECRET_RAW`.
+2. Deploy the smart contract
+
+```
+$ cd src/ethereum-contracts/
+$ # Deploy HTLC contract for ETH swap
+$ truffle exec scripts/htlc-cli.js --network env --command deploy-htlc --htlc-type eth
+$ # Deploy HTLC contract for ERC20 swap
+$ truffle exec scripts/htlc-cli.js --network env --command deploy-htlc --htlc-type erc20
+```
+
+#### Get HTLC details
+
+1. Specify the `TON_HTLC_ADDRESS` with the address, received at deploy step
+2. Get all the details from the smart contract
+
+```
+$ cd src/ethereum-contracts/
+$ # Get details for ETH swap
+$ truffle exec scripts/htlc-cli.js --network env --command get-details --htlc-type eth
+$ # Get details for ERC20 swap
+$ truffle exec scripts/htlc-cli.js --network env --command get-details --htlc-type erc20
+```
+
+#### Withdraw
+
+1. Specify the raw secret key at the `ETHEREUM_HTLC_SECRET_RAW`
+2. Send the withdraw transaction
+
+```
+$ cd src/ethereum-contracts/
+$ # Withdraw ETH swap
+$ truffle exec scripts/htlc-cli.js --network env --command withdraw --htlc-type eth
+$ # Withdraw ERC20 swap
+$ truffle exec scripts/htlc-cli.js --network env --command withdraw --htlc-type erc20
+
+```
+
 ## TON contracts
 
 TON network also support smart contracts, but the TVM implementation differs from the EVM. So HTLC smart contract is slightly different from the Ethereum's one. The smart contracts is written in Solidity, by using the TON labs Solidity compiler.
@@ -126,7 +200,7 @@ $ tvm_linker compile HTLC-Crystal.code --lib <REPLACE_WITH_YOUR_PATH>/TON-Solidi
 
 ### Configure
 
-All the details for using the HTLC contract over the TON network should be placed in the `/src/ton-contracts/.env` file. Copy & paste the template bellow and fill it with your details.
+All the configuration for using the HTLC contract over the TON network should be placed in the `/src/ton-contracts/.env` file. Copy & paste the template bellow and fill it with your details.
 
 ```
 TON_HTLC_TVC=contracts/1893ca442d590d1a122b170e52c69d1937cc82538bcfd83c4c2caa7a2ad20873.tvc
@@ -148,7 +222,7 @@ TON_HTLC_ADDRESS=
 TON_HTLC_SECRET_RAW=
 ```
 
-### Using TON HTLC contract
+### Interact with TON HTLC smart contract
 
 At this section you can find an instructions for working with TON HTLC smart contract. Using this toolbox, you can:
 
@@ -178,5 +252,13 @@ $ node scripts/get-htlc-details.js
 ```
 
 #### Withdraw 
+
+1. Specify the raw secret key at the `TON_HTLC_SECRET_RAW`
+2. Send the withdraw message
+
+```
+$ cd src/ton-contracts/
+$ node scripts/withdraw.js
+```
 
 ## Bitcoin contracts
