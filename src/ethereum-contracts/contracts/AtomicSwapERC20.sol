@@ -1,13 +1,14 @@
 pragma solidity ^0.5.4;
 
 import './utils/SafeMath.sol';
-import './interfaces/IERC20.sol';
+import "./interfaces/IToken.sol";
 
 /**
  * @title Hashed Timelock Contracts for using with ERC20.
  */
 contract AtomicSwapERC20 {
     using SafeMath for uint256;
+    using UniversalERC20 for IToken;
 
     address public target;
     address public backup;
@@ -25,7 +26,7 @@ contract AtomicSwapERC20 {
     bool public refunded;
 
     function contractBalance() view public returns(uint) {
-        return IERC20(token).balanceOf(address(this));
+        return IToken(token).universalBalanceOf(address(this));
     }
 
     modifier fundsSent() {
@@ -110,12 +111,12 @@ contract AtomicSwapERC20 {
         withdrawn = true;
 
         // Calculate the platform fee before the withdraw
-        uint platformFee = contractBalance() - amount + feeAmount;
+        uint platformFee = contractBalance().sub(amount).add(feeAmount);
 
-        IERC20(token).transfer(target, amount - feeAmount);
+        IToken(token).universalTransfer(target, amount.sub(feeAmount));
 
         if (platformFee > 0) {
-            IERC20(token).transfer(platform, platformFee);
+            IToken(token).universalTransfer(platform, platformFee);
         }
 
         return true;
@@ -135,8 +136,9 @@ contract AtomicSwapERC20 {
     {
         refunded = true;
 
-        IERC20(token).transfer(backup, contractBalance());
+        IToken(token).universalTransfer(backup, contractBalance());
 
         return true;
     }
 }
+

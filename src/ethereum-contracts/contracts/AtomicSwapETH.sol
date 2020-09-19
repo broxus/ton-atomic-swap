@@ -112,9 +112,9 @@ contract AtomicSwapETH {
         withdrawn = true;
 
         // Calculate the platform fee before the withdraw
-        uint platformFee = contractBalance() - amount + feeAmount;
+        uint platformFee = contractBalance().sub(amount).add(feeAmount);
 
-        target.transfer(amount - feeAmount);
+        target.transfer(amount.sub(feeAmount));
 
         if (platformFee > 0) {
             platform.transfer(platformFee);
