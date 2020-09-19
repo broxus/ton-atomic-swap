@@ -26,6 +26,13 @@
 			]
 		},
 		{
+			"name": "withdrawFee",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "refund",
 			"inputs": [
 			],
@@ -43,6 +50,14 @@
 		},
 		{
 			"name": "getAmount",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"}
+			]
+		},
+		{
+			"name": "getFeeAmount",
 			"inputs": [
 			],
 			"outputs": [
@@ -84,10 +99,9 @@
 		{
 			"name": "getRawSecret",
 			"inputs": [
-				{"name":"i","type":"uint256"}
 			],
 			"outputs": [
-				{"name":"value0","type":"uint256"}
+				{"name":"value0","type":"uint256[]"}
 			]
 		},
 		{
@@ -116,6 +130,7 @@
 		}
 	],
 	"data": [
+		{"key":1,"name":"contractNonce","type":"uint256"}
 	],
 	"events": [
 	]
