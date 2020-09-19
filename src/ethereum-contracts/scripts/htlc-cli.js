@@ -85,13 +85,16 @@ module.exports = async (callback) => {
   
       let balance;
       
-      if (htlcType === 'eth') {
-        balance = await web3.eth.getBalance(htlcContractAddress);
-      } else {
-        const tokenContract = await Token.at(process.env.ETHEREUM_HTLC_TOKEN_ADDRESS);
-        balance = await tokenContract.balanceOf.call(htlcContractAddress);
+      try {
+        if (htlcType === 'eth') {
+          balance = await web3.eth.getBalance(htlcContractAddress);
+        } else {
+          const tokenContract = await Token.at(process.env.ETHEREUM_HTLC_TOKEN_ADDRESS);
+          balance = await tokenContract.balanceOf.call(htlcContractAddress);
+        }
+      } catch (e) {
+        console.log(e);
       }
-  
       const amount = await htlcContract.amount.call();
   
       console.log(`Contract balance: ${balance}`);
@@ -123,6 +126,17 @@ module.exports = async (callback) => {
       const hashedSecret = await htlcContract.hashedSecret.call();
       console.log(`Hashed secret as uint: ${BigInt(hashedSecret).toString(10)}`);
 
+      try {
+        const secretRaw = [
+          (await htlcContract.rawSecret.call(0)),
+          (await htlcContract.rawSecret.call(1)),
+        ];
+        
+        console.log(`Raw secret: ${secretRaw[0].toString(16)}${secretRaw[1].toString(16)}`);
+      } catch (e) {
+        console.log(e);
+      }
+      
       break;
     case 'withdraw':
       htlcContractAddress = process.env.ETHEREUM_HTLC_ADDRESS;
