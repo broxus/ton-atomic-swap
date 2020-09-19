@@ -31,5 +31,8 @@
     "ton-client-node-js": "^0.26.1",
     "truffle": "^5.1.44",
     "wait-console-input": "^0.1.7"
+    "bitcoinjs-lib": "^5.1.6",
+    "btc-opcode": "0.0.1",
+    "minimist": "^1.2.0"
   }
 }
