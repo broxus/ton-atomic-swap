@@ -6,11 +6,16 @@ const logger = require('mocha-logger');
 const assert = require('assert');
 
 const {
-  SecretGenerator,
-  secretToUints,
   catchRevert,
   Timer,
 } = require('./utils');
+
+const {
+  utils: {
+    SecretGenerator,
+    secretToUints,
+  },
+} = require('@tonatomicswap/common');
 
 
 // Atomic swap independent parameters

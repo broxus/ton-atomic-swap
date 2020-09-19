@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npm link src/common"
   },
   "keywords": [
     "bitcoin",
@@ -20,10 +21,15 @@
     "bignumber.js": "^9.0.0",
     "bip39": "^3.0.2",
     "crypto": "^1.0.1",
+    "dotenv": "^8.2.0",
     "ganache-cli": "^6.10.2",
     "js-sha256": "^0.9.0",
+    "minimist": "^1.2.5",
     "mocha-logger": "^1.0.6",
     "moment": "^2.28.0",
-    "truffle": "^5.1.44"
+    "ton-client-js": "^0.26.1",
+    "ton-client-node-js": "^0.26.1",
+    "truffle": "^5.1.44",
+    "wait-console-input": "^0.1.7"
   }
 }
