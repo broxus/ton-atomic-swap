@@ -1,0 +1,18 @@
+title Atomic swap pipeline
+
+Alice -> Bob: Agree on swap amount (X coin 1 vs Y coin 2)
+Alice -> Bob: Specifies target address in network 2 and backup address in network 1
+Bob -> Alice: Specifies target address in network 1 and backup address in network 2
+Alice -> Alice: Generate secret key
+Alice->Alice HTLC (network 1): Deploy smart contract. Contract parameters:\n- Swap amount (X COIN1)\n- Target address\n- Backup address\n- Hashed secret key\n- Time lock
+Alice ->Alice HTLC (network 1): Deposit X COIN1
+Alice -> Bob: Send the Alice HTLC smart contract address
+Bob -> Alice HTLC (network 1): Verify all the parameters and the contract code
+Bob -> Bob HTLC (network 2): Deploy smart contract. Contract parameters:\n- Swap amount (Y COIN2)\n- Target address\n- Backup address\n- Hashed secret key\n- Time lock
+Bob ->Bob HTLC (network 2): Deposit Y COIN2
+Bob ->Alice: Send the Bob HTLC smart contract address
+Alice ->Bob HTLC (network 2): Withdrawing Y COIN2 by providing secret key
+Bob HTLC (network 2) -> Alice target address (network 2): Sends Y COIN2
+Bob ->Bob HTLC (network 2): Get the secret key
+Bob HTLC (network 2) ->Bob: Secret key
+Bob ->Alice HTLC (network 1): Withdrawing X COIN1 by providing secret key

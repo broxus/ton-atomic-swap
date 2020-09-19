@@ -94,49 +94,49 @@ CALL $futureTimeLock_internal$
 ;; push identifier _target
 PUSH S6
 ; colValue
-SETGLOB 10
+SETGLOB 11
 ; end colValue
 ; expValue
 ; end expValue
 ;; push identifier _backup
 PUSH S5
 ; colValue
-SETGLOB 11
+SETGLOB 12
 ; end colValue
 ; expValue
 ; end expValue
 ;; push identifier _platform
 PUSH S4
 ; colValue
-SETGLOB 12
+SETGLOB 13
 ; end colValue
 ; expValue
 ; end expValue
 ;; push identifier _feeAmount
 PUSH S3
 ; colValue
-SETGLOB 13
+SETGLOB 14
 ; end colValue
 ; expValue
 ; end expValue
 ;; push identifier _amount
 PUSH S2
 ; colValue
-SETGLOB 14
+SETGLOB 15
 ; end colValue
 ; expValue
 ; end expValue
 ;; push identifier _timeLock
 PUSH S1
 ; colValue
-SETGLOB 17
+SETGLOB 18
 ; end colValue
 ; expValue
 ; end expValue
 ;; push identifier _hashedSecret
 DUP
 ; colValue
-SETGLOB 15
+SETGLOB 16
 ; end colValue
 BLKDROP 7
 ; end constructor NativeHTLC
@@ -163,7 +163,7 @@ DROP
 ;; param: _rawSecret
 ; function secretHashMatches
 ;; push identifier hashedSecret
-GETGLOB 15
+GETGLOB 16
 NEWC
 ;; index
 PUSHINT 0
@@ -219,13 +219,13 @@ ENDS
 GETPARAM 7
 INDEX 0
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ;; >=
 GEQ
 THROWIFNOT 100
 ; modifier withdrawable
 ;; push identifier withdrawn
-GETGLOB 18
+GETGLOB 19
 FALSE
 ;; ==
 EQUAL
@@ -240,24 +240,24 @@ ACCEPT
 ;; push identifier _rawSecret
 DUP
 ; colValue
-SETGLOB 16
+SETGLOB 17
 ; end colValue
 ; expValue
 ; end expValue
 TRUE
 ; colValue
-SETGLOB 18
+SETGLOB 19
 ; end colValue
 ;; transfer()
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ;; push identifier feeAmount
-GETGLOB 13
+GETGLOB 14
 ;; -
 SUB
 UFITS 128
 ;; push identifier target
-GETGLOB 10
+GETGLOB 11
 NEWC
 STSLICECONST x42_
 STSLICE
@@ -268,35 +268,7 @@ STZEROES
 STSLICECONST 0
 STSLICECONST 0
 ENDC
-PUSHINT 0
-SENDRAWMSG
-;; transfer()
-;; get member balance
-GETPARAM 7
-INDEX 0
-;; push identifier amount
-GETGLOB 14
-;; -
-SUB
-UFITS 128
-;; push identifier feeAmount
-GETGLOB 13
-;; +
-ADD
-UFITS 128
-;; push identifier platform
-GETGLOB 12
-NEWC
-STSLICECONST x42_
-STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
-ENDC
-PUSHINT 0
+PUSHINT 1
 SENDRAWMSG
 ;; return
 TRUE
@@ -342,13 +314,13 @@ SETGLOB 7
 GETPARAM 7
 INDEX 0
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ;; >=
 GEQ
 THROWIFNOT 100
 ; modifier withdrawable
 ;; push identifier withdrawn
-GETGLOB 18
+GETGLOB 19
 FALSE
 ;; ==
 EQUAL
@@ -363,24 +335,24 @@ ACCEPT
 ;; push identifier _rawSecret
 DUP
 ; colValue
-SETGLOB 16
+SETGLOB 17
 ; end colValue
 ; expValue
 ; end expValue
 TRUE
 ; colValue
-SETGLOB 18
+SETGLOB 19
 ; end colValue
 ;; transfer()
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ;; push identifier feeAmount
-GETGLOB 13
+GETGLOB 14
 ;; -
 SUB
 UFITS 128
 ;; push identifier target
-GETGLOB 10
+GETGLOB 11
 NEWC
 STSLICECONST x42_
 STSLICE
@@ -391,35 +363,7 @@ STZEROES
 STSLICECONST 0
 STSLICECONST 0
 ENDC
-PUSHINT 0
-SENDRAWMSG
-;; transfer()
-;; get member balance
-GETPARAM 7
-INDEX 0
-;; push identifier amount
-GETGLOB 14
-;; -
-SUB
-UFITS 128
-;; push identifier feeAmount
-GETGLOB 13
-;; +
-ADD
-UFITS 128
-;; push identifier platform
-GETGLOB 12
-NEWC
-STSLICECONST x42_
-STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
-ENDC
-PUSHINT 0
+PUSHINT 1
 SENDRAWMSG
 ;; return
 TRUE
@@ -431,6 +375,72 @@ DROP
 ; end modifier fundsSent
 GETGLOB 8
 UNTUPLE 1
+
+.globl	withdrawFee
+.public	withdrawFee
+.type	withdrawFee, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; modifier onlyAfterWithdraw
+;; push identifier withdrawn
+GETGLOB 19
+TRUE
+;; ==
+EQUAL
+THROWIFNOT 100
+; function withdrawFee
+ACCEPT
+;; transfer()
+;; push identifier platform
+GETGLOB 13
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function withdrawFee
+; end modifier onlyAfterWithdraw
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	withdrawFee_internal
+.type	withdrawFee_internal, @function
+; modifier onlyAfterWithdraw
+;; push identifier withdrawn
+GETGLOB 19
+TRUE
+;; ==
+EQUAL
+THROWIFNOT 100
+; function withdrawFee
+ACCEPT
+;; transfer()
+;; push identifier platform
+GETGLOB 13
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function withdrawFee
+; end modifier onlyAfterWithdraw
 
 .globl	refund
 .public	refund
@@ -448,25 +458,25 @@ ENDS
 GETPARAM 7
 INDEX 0
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ;; >=
 GEQ
 THROWIFNOT 100
 ; modifier refundable
 ;; push identifier refunded
-GETGLOB 19
+GETGLOB 20
 FALSE
 ;; ==
 EQUAL
 THROWIFNOT 100
 ;; push identifier withdrawn
-GETGLOB 18
+GETGLOB 19
 FALSE
 ;; ==
 EQUAL
 THROWIFNOT 100
 ;; push identifier timeLock
-GETGLOB 17
+GETGLOB 18
 ;; push identifier now
 NOW
 ;; <=
@@ -478,25 +488,20 @@ ACCEPT
 ; end expValue
 TRUE
 ; colValue
-SETGLOB 19
+SETGLOB 20
 ; end colValue
 ;; transfer()
-;; get member balance
-GETPARAM 7
-INDEX 0
 ;; push identifier backup
-GETGLOB 11
+GETGLOB 12
 NEWC
 STSLICECONST x42_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
+PUSHINT 109
 STZEROES
 STSLICECONST 0
 STSLICECONST 0
 ENDC
-PUSHINT 0
+PUSHINT 128
 SENDRAWMSG
 ;; return
 TRUE
@@ -540,25 +545,25 @@ SETGLOB 7
 GETPARAM 7
 INDEX 0
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ;; >=
 GEQ
 THROWIFNOT 100
 ; modifier refundable
 ;; push identifier refunded
-GETGLOB 19
+GETGLOB 20
 FALSE
 ;; ==
 EQUAL
 THROWIFNOT 100
 ;; push identifier withdrawn
-GETGLOB 18
+GETGLOB 19
 FALSE
 ;; ==
 EQUAL
 THROWIFNOT 100
 ;; push identifier timeLock
-GETGLOB 17
+GETGLOB 18
 ;; push identifier now
 NOW
 ;; <=
@@ -570,25 +575,20 @@ ACCEPT
 ; end expValue
 TRUE
 ; colValue
-SETGLOB 19
+SETGLOB 20
 ; end colValue
 ;; transfer()
-;; get member balance
-GETPARAM 7
-INDEX 0
 ;; push identifier backup
-GETGLOB 11
+GETGLOB 12
 NEWC
 STSLICECONST x42_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
+PUSHINT 109
 STZEROES
 STSLICECONST 0
 STSLICECONST 0
 ENDC
-PUSHINT 0
+PUSHINT 128
 SENDRAWMSG
 ;; return
 TRUE
@@ -668,7 +668,7 @@ ENDS
 ; function getAmount
 ;; return
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -709,8 +709,66 @@ SETGLOB 7
 ; function getAmount
 ;; return
 ;; push identifier amount
-GETGLOB 14
+GETGLOB 15
 ; end function getAmount
+
+.globl	getFeeAmount
+.public	getFeeAmount
+.type	getFeeAmount, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function getFeeAmount
+;; return
+;; push identifier feeAmount
+GETGLOB 14
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x97aa6e77
+	PUSH S1
+	STUR 256
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+DROP
+; end function getFeeAmount
+EQINT -1
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getFeeAmount_internal
+.type	getFeeAmount_internal, @function
+; function getFeeAmount
+;; return
+;; push identifier feeAmount
+GETGLOB 14
+; end function getFeeAmount
 
 .globl	getHashedSecret
 .public	getHashedSecret
@@ -726,7 +784,7 @@ ENDS
 ; function getHashedSecret
 ;; return
 ;; push identifier hashedSecret
-GETGLOB 15
+GETGLOB 16
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -767,7 +825,7 @@ SETGLOB 7
 ; function getHashedSecret
 ;; return
 ;; push identifier hashedSecret
-GETGLOB 15
+GETGLOB 16
 ; end function getHashedSecret
 
 .globl	getTimeLock
@@ -784,7 +842,7 @@ ENDS
 ; function getTimeLock
 ;; return
 ;; push identifier timeLock
-GETGLOB 17
+GETGLOB 18
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -825,7 +883,7 @@ SETGLOB 7
 ; function getTimeLock
 ;; return
 ;; push identifier timeLock
-GETGLOB 17
+GETGLOB 18
 ; end function getTimeLock
 
 .globl	getWithdrawn
@@ -842,7 +900,7 @@ ENDS
 ; function getWithdrawn
 ;; return
 ;; push identifier withdrawn
-GETGLOB 18
+GETGLOB 19
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -883,7 +941,7 @@ SETGLOB 7
 ; function getWithdrawn
 ;; return
 ;; push identifier withdrawn
-GETGLOB 18
+GETGLOB 19
 ; end function getWithdrawn
 
 .globl	getRefunded
@@ -900,7 +958,7 @@ ENDS
 ; function getRefunded
 ;; return
 ;; push identifier refunded
-GETGLOB 19
+GETGLOB 20
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -941,7 +999,7 @@ SETGLOB 7
 ; function getRefunded
 ;; return
 ;; push identifier refunded
-GETGLOB 19
+GETGLOB 20
 ; end function getRefunded
 
 .globl	getRawSecret
@@ -954,23 +1012,11 @@ PUSHCONT {
 }
 IF
 ; Decode input parameters
-; Decode i
-LDU 256
 ENDS
-;; param: i
 ; function getRawSecret
 ;; return
-;; index
-;; push identifier i
-DUP
 ;; push identifier rawSecret
-GETGLOB 16
-INDEX 1
-PUSHINT 32
-DICTUGET
-THROWIFNOT 50
-PLDU 256
-NIP
+GETGLOB 17
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -988,9 +1034,12 @@ PUSHCONT {
 	STZEROES
 	STSLICECONST 0
 	STSLICECONST 0
-	STSLICECONST x8166ac71
+	STSLICECONST xaffd3ec1
 	PUSH S1
-	STUR 256
+	UNPAIR
+	XCHG s2
+	STU 32
+	STDICT
 	ENDC
 	PUSHINT 1
 	SENDRAWMSG
@@ -1008,20 +1057,10 @@ SETGLOB 7
 
 .globl	getRawSecret_internal
 .type	getRawSecret_internal, @function
-;; param: i
 ; function getRawSecret
 ;; return
-;; index
-;; push identifier i
-DUP
 ;; push identifier rawSecret
-GETGLOB 16
-INDEX 1
-PUSHINT 32
-DICTUGET
-THROWIFNOT 50
-PLDU 256
-NIP
+GETGLOB 17
 ; end function getRawSecret
 
 .globl	getTarget
@@ -1038,7 +1077,7 @@ ENDS
 ; function getTarget
 ;; return
 ;; push identifier target
-GETGLOB 10
+GETGLOB 11
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -1079,7 +1118,7 @@ SETGLOB 7
 ; function getTarget
 ;; return
 ;; push identifier target
-GETGLOB 10
+GETGLOB 11
 ; end function getTarget
 
 .globl	getBackup
@@ -1096,7 +1135,7 @@ ENDS
 ; function getBackup
 ;; return
 ;; push identifier backup
-GETGLOB 11
+GETGLOB 12
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -1137,7 +1176,7 @@ SETGLOB 7
 ; function getBackup
 ;; return
 ;; push identifier backup
-GETGLOB 11
+GETGLOB 12
 ; end function getBackup
 
 .globl	getPlatform
@@ -1154,7 +1193,7 @@ ENDS
 ; function getPlatform
 ;; return
 ;; push identifier platform
-GETGLOB 12
+GETGLOB 13
 ;; emitting 1 value(s)
 PUSH S1
 EQINT -1
@@ -1195,7 +1234,7 @@ SETGLOB 7
 ; function getPlatform
 ;; return
 ;; push identifier platform
-GETGLOB 12
+GETGLOB 13
 ; end function getPlatform
 
 .globl	c7_to_c4
@@ -1210,30 +1249,32 @@ STUR 1
 NEWC
 GETGLOB 12
 GETGLOB 13
-GETGLOB 14
 GETGLOB 15
-REVERSE 5, 0
+GETGLOB 16
+GETGLOB 17
+UNTUPLE 2
+REVERSE 7, 0
+STSLICE
 STSLICE
 STU 128
-STU 128
 STU 256
+STU 32
+STDICT
 NEWC
-GETGLOB 17
+GETGLOB 18
 SWAP
 STU 256
 GETGLOB 10
 GETGLOB 11
-GETGLOB 16
-UNTUPLE 2
-GETGLOB 18
+GETGLOB 14
 GETGLOB 19
-REVERSE 9, 0
+GETGLOB 20
+REVERSE 8, 0
 STBREF
 STBREF
+STU 256
 STSLICE
-STSLICE
-STU 32
-STDICT
+STU 128
 STI 1
 STI 1
 ENDC
@@ -1248,27 +1289,28 @@ LDU 64      ; pubkey timestamp c4
 LDU 1       ; pubkey [timestamp] constructor_flag memory
 LDREFRTOS
 LDMSGADDR
+LDMSGADDR
 LDU 128
-LDU 128
-PLDU 256
+LDU 256
+LDU 32
+PLDDICT
+PAIR
+SETGLOB 17
+SETGLOB 16
 SETGLOB 15
-SETGLOB 14
 SETGLOB 13
 SETGLOB 12
 LDREFRTOS
 PLDU 256
-SETGLOB 17
+SETGLOB 18
+LDU 256
 LDMSGADDR
-LDMSGADDR
-LDU 32
-LDDICT
-ROTREV
-PAIR
-SETGLOB 16
+LDU 128
 LDI 1
 PLDI 1
+SETGLOB 20
 SETGLOB 19
-SETGLOB 18
+SETGLOB 14
 SETGLOB 11
 SETGLOB 10
 TRUE
@@ -1289,27 +1331,28 @@ PUSHCONT {
 	LDU 1       ; pubkey [timestamp] constructor_flag memory
 	LDREFRTOS
 	LDMSGADDR
+	LDMSGADDR
 	LDU 128
-	LDU 128
-	PLDU 256
+	LDU 256
+	LDU 32
+	PLDDICT
+	PAIR
+	SETGLOB 17
+	SETGLOB 16
 	SETGLOB 15
-	SETGLOB 14
 	SETGLOB 13
 	SETGLOB 12
 	LDREFRTOS
 	PLDU 256
-	SETGLOB 17
+	SETGLOB 18
+	LDU 256
 	LDMSGADDR
-	LDMSGADDR
-	LDU 32
-	LDDICT
-	ROTREV
-	PAIR
-	SETGLOB 16
+	LDU 128
 	LDI 1
 	PLDI 1
+	SETGLOB 20
 	SETGLOB 19
-	SETGLOB 18
+	SETGLOB 14
 	SETGLOB 11
 	SETGLOB 10
 	TRUE
@@ -1320,38 +1363,51 @@ PUSHCONT {
 }
 PUSHCONT {
 	PLDDICT   ; D
+	; init contractNonce
+	PUSHINT 1
+	PUSH S1
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDU 256
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	SETGLOB 10
 	; init target
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	SETGLOB 10
+	SETGLOB 11
 	; init backup
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	SETGLOB 11
+	SETGLOB 12
 	; init platform
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	SETGLOB 12
+	SETGLOB 13
 	; init feeAmount
 	PUSHINT 0
-	SETGLOB 13
+	SETGLOB 14
 	; init amount
 	PUSHINT 0
-	SETGLOB 14
+	SETGLOB 15
 	; init hashedSecret
 	PUSHINT 0
-	SETGLOB 15
+	SETGLOB 16
 	; init rawSecret
 	PUSHINT 0
 	NEWDICT
 	PAIR
-	SETGLOB 16
+	SETGLOB 17
 	; init timeLock
 	PUSHINT 0
-	SETGLOB 17
+	SETGLOB 18
 	; init withdrawn
 	PUSHINT 0
-	SETGLOB 18
+	SETGLOB 19
 	; init refunded
 	PUSHINT 0
-	SETGLOB 19
+	SETGLOB 20
 	; set contract pubkey
 	PUSHINT 0
 	SWAP

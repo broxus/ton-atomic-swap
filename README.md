@@ -87,49 +87,17 @@ $ npm --version
 $ npm install
 ```
 
-## TON contracts
-
-## Bitcoin contracts
-
-1. Генерим 2 адреса (оба сегвитовские):
-```
-node generate_addr.js
--------
-WIF private key:  cNRf95wXxCpiTbEZVaTZm399qgS6EDLPCPj8XCLe7U5thSuu3VGr
-Bitcoin address (native segwit):  tb1qp5svaqlq6c6cajxvtcyhmtu80ysk99cjmcc4n7
-```
-2. Генерируем htlc контракт адрес, используем адреса которые получили на предыдущем шаге
-```
-node generate_htlc.js --secret <secret hex> --receiver <addr1> --payer <addr2> --timelock <now + 24/48h timestamp>
--------
-secret hash <secret hash hex>
-Redeem script -  <redeem script hex>
-P2SH addr -  <p2sh addr>
-```
-
-3. Отправляем средства на htlc контракт, пр. ключ мы получили на этапе генерации адресов, остальное надо вытаскивать из транзакции, которой зачислили бабки на наш адрес:
-```
-node simple_send.js --key <WIF private key> --tx_id <input tx hash> --index <output num in input tx that we spend> --in_value <output value that we spend> --receiver <receiver addr, htlc contract should be here> --out_value <output value>
---------
-Transaction hex:
-<resulted tx hex>
-```
-4. Выводим средства с htlc контракта. Input tx hex и redeem hex мы получали на предыдущих шагах, секрет известен
-```
-node redeem_htlc.js --key <WIF private key of receiver addr of htlc> --tx_id <input tx hash> --index <output num in input tx that we spend> —receiver <receiver addr> —out_value <output value> —prev_tx <input tx hex> —redeem <redeem script hex> —secret <secret to unlock htlc>
--------
-Redeem tx hex:
-<tx hex>
-```
 ## Ethereum contracts
 
-The HTLC idea fits perfectly with EVM smart contracts, so the implementation for Ethereum side isn't the hardest part. Basically, there're two smart contracts for Ethereum network - `AtomicSwapETH` and `AtomicSwapERC20`. First one should be used for working with native ETH token, and second one supports any ERC20 token.
+The HTLC idea fits perfectly with EVM smart contracts, so the implementation for Ethereum side isn't the hardest part. Basically, there're two smart contracts for Ethereum network - `AtomicSwapETH` and `AtomicSwapERC20`. First one should be used for working with native ETH token, and second one supports any ERC20 token. The smart contract's source code is written in Solidity. All the code can be found at [/src/ethereum-contracts/contracts](/src/ethereum-contracts/contracts).
 
-### Source code
+### Compile smart contracts
+```
+$ cd src/ethereum/contracts
+$ truffle compile
+```
 
-The smart contract's source code is written in Solidity. All the code can be found at [/src/ethereum-contracts/contracts](/src/ethereum-contracts/contracts).
-
-### Tests
+### Test
 
 There're automatic Truffle tests, that covers the ETH / ERC20 atomic swap contracts on Ethereum. The easiest way to run this tests, is to run the Ganache and then start the Truffle tests.
 
@@ -141,3 +109,156 @@ $ truffle test
 ```
 
 **Important:** to test the refund functionality, you should be able to manipulate the blockchain time. So, running this tests on the Mainnet / Ropsten / etc networks probably won't work.
+
+### Interact with Ethereum ETH / ERC20 smart contract
+
+At this section you can find an instruction for working with Ethereum HTLC contracts (ETH and ERC20 version). All the interactions are implemented in form of cli application at `src/ethereum-contracts/scripts/htlc-cli.js`. This CLI allows you to:
+
+- Deploy HTLC contract
+- Get the parameters and status of the HTLC contract
+- Withdraw from the HTLC contract, by providing the secret key
+
+#### Configure
+
+All the configuration for using the HTLC contract over the Ethereum network should be placed in the `/src/ethereum-contracts/.env` file. Copy & paste the template bellow and fill it with your details.
+
+```
+ETHEREUM_NODE_RPC=
+ETHEREUM_PRIVATE_KEY=
+ETHEREUM_NETWORK_ID=
+ETHEREUM_GAS_PRICE=
+
+ETHEREUM_HTLC_TARGET_ADDRESS=
+ETHEREUM_HTLC_BACKUP_ADDRESS=
+ETHEREUM_HTLC_PLATFORM_ADDRESS=
+ETHEREUM_HTLC_SWAP_AMOUNT=
+ETHEREUM_HTLC_FEE_AMOUNT=
+ETHEREUM_HTLC_TIME_LOCK=
+ETHEREUM_HTLC_SECRET_HASH=
+
+ETHEREUM_HTLC_TOKEN_ADDRESS=
+
+ETHEREUM_HTLC_ADDRESS=
+ETHEREUM_HTLC_SECRET_RAW=
+```
+
+**Important:** Specify `ETHEREUM_HTLC_TOKEN_ADDRESS` in case you deploying HTLC swap for ERC20 token. Leave it blank for ETH swap.
+
+#### Deploy
+
+1. Specify all environment parameters, except `ETHEREUM_HTLC_ADDRESS` and `ETHEREUM_HTLC_SECRET_RAW`.
+2. Deploy the smart contract
+
+```
+$ cd src/ethereum-contracts/
+$ # Deploy HTLC contract for ETH swap
+$ truffle exec scripts/htlc-cli.js --network env --command deploy-htlc --htlc-type eth
+$ # Deploy HTLC contract for ERC20 swap
+$ truffle exec scripts/htlc-cli.js --network env --command deploy-htlc --htlc-type erc20
+```
+
+#### Get HTLC details
+
+1. Specify the `TON_HTLC_ADDRESS` with the address, received at deploy step
+2. Get all the details from the smart contract
+
+```
+$ cd src/ethereum-contracts/
+$ # Get details for ETH swap
+$ truffle exec scripts/htlc-cli.js --network env --command get-details --htlc-type eth
+$ # Get details for ERC20 swap
+$ truffle exec scripts/htlc-cli.js --network env --command get-details --htlc-type erc20
+```
+
+#### Withdraw
+
+1. Specify the raw secret key at the `ETHEREUM_HTLC_SECRET_RAW`
+2. Send the withdraw transaction
+
+```
+$ cd src/ethereum-contracts/
+$ # Withdraw ETH swap
+$ truffle exec scripts/htlc-cli.js --network env --command withdraw --htlc-type eth
+$ # Withdraw ERC20 swap
+$ truffle exec scripts/htlc-cli.js --network env --command withdraw --htlc-type erc20
+
+```
+
+## TON contracts
+
+TON network also support smart contracts, but the TVM implementation differs from the EVM. So HTLC smart contract is slightly different from the Ethereum's one. The smart contracts is written in Solidity, by using the TON labs Solidity compiler.
+
+### Compile
+
+To update the contract source, you should install [TON Solidity compiler](https://github.com/tonlabs/TON-Solidity-Compiler) and [tvm linker](https://github.com/tonlabs/TVM-linker).
+
+```
+$ cd src/ton-contracts/contracts;
+$ solc HTLC-Crystal.sol
+$ tvm_linker compile HTLC-Crystal.code --lib <REPLACE_WITH_YOUR_PATH>/TON-Solidity-Compiler/lib/stdlib_sol.tvm
+```
+
+### Configure
+
+All the configuration for using the HTLC contract over the TON network should be placed in the `/src/ton-contracts/.env` file. Copy & paste the template bellow and fill it with your details.
+
+```
+TON_HTLC_TVC=contracts/1893ca442d590d1a122b170e52c69d1937cc82538bcfd83c4c2caa7a2ad20873.tvc
+TON_HTLC_ABI=contracts/HTLC-Crystal.abi.json
+
+TON_SECRET_KEY=
+TON_PUBLIC_KEY=
+TON_SERVER=https://main.ton.dev
+
+TON_HTLC_TARGET_ADDRESS=
+TON_HTLC_BACKUP_ADDRESS=
+TON_HTLC_PLATFORM_ADDRESS=
+TON_HTLC_SWAP_AMOUNT=
+TON_HTLC_FEE_AMOUNT=
+TON_HTLC_TIME_LOCK=
+TON_HTLC_SECRET_HASH=
+
+TON_HTLC_ADDRESS=
+TON_HTLC_SECRET_RAW=
+```
+
+### Interact with TON HTLC smart contract
+
+At this section you can find an instructions for working with TON HTLC smart contract. Using this toolbox, you can:
+
+- Deploy HTLC contract
+- Get the parameters and status of the HTLC contract
+- Withdraw from the HTLC contract, by providing the secret key
+- Refund from the HTLC contract, after the time lock expires
+
+#### Deploy
+
+1. Specify all environment parameters, except `TON_HTLC_ADDRESS` and `TON_HTLC_SECRET_RAW`
+2. Deploy the smart contract
+
+```
+$ cd src/ton-contracts/
+$ node scripts/deploy.js
+```
+
+#### Get HTLC details
+
+1. Specify the `TON_HTLC_ADDRESS` with the address, received at deploy step
+2. Get all the details from the smart contract
+
+```
+$ cd src/ton-contracts/
+$ node scripts/get-htlc-details.js
+```
+
+#### Withdraw 
+
+1. Specify the raw secret key at the `TON_HTLC_SECRET_RAW`
+2. Send the withdraw message
+
+```
+$ cd src/ton-contracts/
+$ node scripts/withdraw.js
+```
+
+## Bitcoin contracts

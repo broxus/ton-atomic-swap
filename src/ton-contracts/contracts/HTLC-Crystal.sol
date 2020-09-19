@@ -9,6 +9,8 @@ pragma AbiHeader expire;
  * This contract provides a way to create a smart contract and handle withdraw or refund scenario.
  */
 contract NativeHTLC {
+    uint public contractNonce;
+
     address target;
     address backup;
     address platform;
@@ -29,6 +31,11 @@ contract NativeHTLC {
 
     modifier withdrawable() {
         require(withdrawn == false);
+        _;
+    }
+
+    modifier onlyAfterWithdraw() {
+        require(withdrawn == true);
         _;
     }
 
@@ -109,10 +116,15 @@ contract NativeHTLC {
         rawSecret = _rawSecret;
         withdrawn = true;
 
-        payable(target).transfer(amount - feeAmount, false, 0);
-        payable(platform).transfer(uint128(address(this).balance - amount + feeAmount), false, 0);
+        target.transfer(amount - feeAmount, false, 1);
 
         return true;
+    }
+
+    function withdrawFee() public onlyAfterWithdraw {
+        tvm.accept();
+
+        platform.transfer(0, false, 128);
     }
 
     /**
@@ -129,7 +141,8 @@ contract NativeHTLC {
     {
         tvm.accept();
         refunded = true;
-        payable(backup).transfer(uint128(address(this).balance), false, 0);
+
+        backup.transfer(0, false, 128);
 
         return true;
     }
@@ -148,6 +161,10 @@ contract NativeHTLC {
      */
     function getAmount() external view returns(uint) {
         return amount;
+    }
+
+    function getFeeAmount() external view returns(uint) {
+        return feeAmount;
     }
 
     /**
@@ -174,8 +191,8 @@ contract NativeHTLC {
         return refunded;
     }
 
-    function getRawSecret(uint i) external view returns(uint) {
-        return rawSecret[i];
+    function getRawSecret() external view returns(uint[2]) {
+        return rawSecret;
     }
 
     function getTarget() external view returns(address) {
