@@ -87,19 +87,17 @@ $ npm --version
 $ npm install
 ```
 
-## TON contracts
-
-## Bitcoin contracts
-
 ## Ethereum contracts
 
-The HTLC idea fits perfectly with EVM smart contracts, so the implementation for Ethereum side isn't the hardest part. Basically, there're two smart contracts for Ethereum network - `AtomicSwapETH` and `AtomicSwapERC20`. First one should be used for working with native ETH token, and second one supports any ERC20 token.
+The HTLC idea fits perfectly with EVM smart contracts, so the implementation for Ethereum side isn't the hardest part. Basically, there're two smart contracts for Ethereum network - `AtomicSwapETH` and `AtomicSwapERC20`. First one should be used for working with native ETH token, and second one supports any ERC20 token. The smart contract's source code is written in Solidity. All the code can be found at [/src/ethereum-contracts/contracts](/src/ethereum-contracts/contracts).
 
-### Source code
+### Compile smart contracts
+```
+$ cd src/ethereum/contracts
+$ truffle compile
+```
 
-The smart contract's source code is written in Solidity. All the code can be found at [/src/ethereum-contracts/contracts](/src/ethereum-contracts/contracts).
-
-### Tests
+### Test
 
 There're automatic Truffle tests, that covers the ETH / ERC20 atomic swap contracts on Ethereum. The easiest way to run this tests, is to run the Ganache and then start the Truffle tests.
 
@@ -111,3 +109,74 @@ $ truffle test
 ```
 
 **Important:** to test the refund functionality, you should be able to manipulate the blockchain time. So, running this tests on the Mainnet / Ropsten / etc networks probably won't work.
+
+## TON contracts
+
+TON network also support smart contracts, but the TVM implementation differs from the EVM. So HTLC smart contract is slightly different from the Ethereum's one. The smart contracts is written in Solidity, by using the TON labs Solidity compiler.
+
+### Compile
+
+To update the contract source, you should install [TON Solidity compiler](https://github.com/tonlabs/TON-Solidity-Compiler) and [tvm linker](https://github.com/tonlabs/TVM-linker).
+
+```
+$ cd src/ton-contracts/contracts;
+$ solc HTLC-Crystal.sol
+$ tvm_linker compile HTLC-Crystal.code --lib <REPLACE_WITH_YOUR_PATH>/TON-Solidity-Compiler/lib/stdlib_sol.tvm
+```
+
+### Configure
+
+All the details for using the HTLC contract over the TON network should be placed in the `/src/ton-contracts/.env` file. Copy & paste the template bellow and fill it with your details.
+
+```
+TON_HTLC_TVC=contracts/1893ca442d590d1a122b170e52c69d1937cc82538bcfd83c4c2caa7a2ad20873.tvc
+TON_HTLC_ABI=contracts/HTLC-Crystal.abi.json
+
+TON_SECRET_KEY=
+TON_PUBLIC_KEY=
+TON_SERVER=https://main.ton.dev
+
+TON_HTLC_TARGET_ADDRESS=
+TON_HTLC_BACKUP_ADDRESS=
+TON_HTLC_PLATFORM_ADDRESS=
+TON_HTLC_SWAP_AMOUNT=
+TON_HTLC_FEE_AMOUNT=
+TON_HTLC_TIME_LOCK=
+TON_HTLC_SECRET_HASH=
+
+TON_HTLC_ADDRESS=
+TON_HTLC_SECRET_RAW=
+```
+
+### Using TON HTLC contract
+
+At this section you can find an instructions for working with TON HTLC smart contract. Using this toolbox, you can:
+
+- Deploy HTLC contract
+- Get the parameters and status of the HTLC contract
+- Withdraw from the HTLC contract, by providing the secret key
+- Refund from the HTLC contract, after the time lock expires
+
+#### Deploy
+
+1. Specify all environment parameters, except `TON_HTLC_ADDRESS` and `TON_HTLC_SECRET_RAW`
+2. Deploy the smart contract
+
+```
+$ cd src/ton-contracts/
+$ node scripts/deploy.js
+```
+
+#### Get HTLC details
+
+1. Specify the `TON_HTLC_ADDRESS` with the address, received at deploy step
+2. Get all the details from the smart contract
+
+```
+$ cd src/ton-contracts/
+$ node scripts/get-htlc-details.js
+```
+
+#### Withdraw 
+
+## Bitcoin contracts
