@@ -1,5 +1,7 @@
 const bitcoin = require('bitcoinjs-lib');
 const TESTNET = bitcoin.networks.testnet;
+const MAINNET = bitcoin.networks.bitcoin;
+
 const minimist = require('minimist');
 const fs = require('fs');
 const htlc = require('./htlc');
@@ -17,10 +19,10 @@ args = minimist(process.argv.slice(2));
 
 const keyPair = bitcoin.ECPair.fromWIF(
     args.key,
-    TESTNET
+    MAINNET
 );
 
-const psbt = new bitcoin.Psbt({network: TESTNET});
+const psbt = new bitcoin.Psbt({network: MAINNET});
 psbt.setVersion(2); // These are defaults. This line is not needed.
 psbt.setLocktime(0); // These are defaults. This line is not needed.
 

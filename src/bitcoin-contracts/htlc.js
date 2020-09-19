@@ -5,6 +5,9 @@ const bs58check = require('bs58check');
 
 
 const TESTNET_VERSION_PREFIX = 196;
+const MAINNET_VERSION_PREFIX = 5;
+const TESTNET_SEGWIT_ADDR_PREFIX = 'tb';
+const MAINNET_SEGWIT_ADDR_PREFIX = 'bc';
 const OP_CHECKLOCKTIMEVERIFY = 177;
 
 function isEven(num) { return ((num % 2) === 0); }
@@ -54,8 +57,8 @@ function htlc(timelock, payer_addr, receiver_addr, hash_) {
     var buf = Buffer.allocUnsafe(4);
     buf.writeUInt32LE(timelock);
     const timelock_hex = buf.toString('hex');
-    const payer_hashed_pubkey = decode('tb', payer_addr).program.map(i => toPaddedHexString(i, 2)).join('');
-    const receiver_hashed_pubkey = decode('tb', payer_addr).program.map(i => toPaddedHexString(i, 2)).join('');
+    const payer_hashed_pubkey = decode(MAINNET_SEGWIT_ADDR_PREFIX, payer_addr).program.map(i => toPaddedHexString(i, 2)).join('');
+    const receiver_hashed_pubkey = decode(MAINNET_SEGWIT_ADDR_PREFIX, receiver_addr).program.map(i => toPaddedHexString(i, 2)).join('');
 
     var script = [op.OP_SHA256, hash_, op.OP_EQUAL];
     script = [...script, ...[op.OP_IF, op.OP_DUP, op.OP_HASH160, receiver_hashed_pubkey, op.OP_EQUALVERIFY, op.OP_CHECKSIG]];
@@ -66,7 +69,7 @@ function htlc(timelock, payer_addr, receiver_addr, hash_) {
 }
 
 function script_to_p2sh_addr(script) {
-    const hashed_script = TESTNET_VERSION_PREFIX.toString(16) + bitcoin.crypto.hash160(Buffer.from(script, 'hex')).toString('hex');
+    const hashed_script = toPaddedHexString(MAINNET_VERSION_PREFIX.toString(16), 2) + bitcoin.crypto.hash160(Buffer.from(script, 'hex')).toString('hex');
     return bs58check.encode(Buffer.from(hashed_script, 'hex'));
 }
 

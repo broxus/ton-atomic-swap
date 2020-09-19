@@ -91,6 +91,36 @@ $ npm install
 
 ## Bitcoin contracts
 
+1. Генерим 2 адреса (оба сегвитовские):
+```
+node generate_addr.js
+-------
+WIF private key:  cNRf95wXxCpiTbEZVaTZm399qgS6EDLPCPj8XCLe7U5thSuu3VGr
+Bitcoin address (native segwit):  tb1qp5svaqlq6c6cajxvtcyhmtu80ysk99cjmcc4n7
+```
+2. Генерируем htlc контракт адрес, используем адреса которые получили на предыдущем шаге
+```
+node generate_htlc.js --secret <secret hex> --receiver <addr1> --payer <addr2> --timelock <now + 24/48h timestamp>
+-------
+secret hash <secret hash hex>
+Redeem script -  <redeem script hex>
+P2SH addr -  <p2sh addr>
+```
+
+3. Отправляем средства на htlc контракт, пр. ключ мы получили на этапе генерации адресов, остальное надо вытаскивать из транзакции, которой зачислили бабки на наш адрес:
+```
+node simple_send.js --key <WIF private key> --tx_id <input tx hash> --index <output num in input tx that we spend> --in_value <output value that we spend> --receiver <receiver addr, htlc contract should be here> --out_value <output value>
+--------
+Transaction hex:
+<resulted tx hex>
+```
+4. Выводим средства с htlc контракта. Input tx hex и redeem hex мы получали на предыдущих шагах, секрет известен
+```
+node redeem_htlc.js --key <WIF private key of receiver addr of htlc> --tx_id <input tx hash> --index <output num in input tx that we spend> —receiver <receiver addr> —out_value <output value> —prev_tx <input tx hex> —redeem <redeem script hex> —secret <secret to unlock htlc>
+-------
+Redeem tx hex:
+<tx hex>
+```
 ## Ethereum contracts
 
 The HTLC idea fits perfectly with EVM smart contracts, so the implementation for Ethereum side isn't the hardest part. Basically, there're two smart contracts for Ethereum network - `AtomicSwapETH` and `AtomicSwapERC20`. First one should be used for working with native ETH token, and second one supports any ERC20 token.
