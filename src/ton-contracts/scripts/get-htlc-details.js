@@ -1,6 +1,7 @@
 require('dotenv').config();
 const assert = require('assert');
 const moment = require('moment');
+const BigNumber = require('bignumber.js');
 
 const {
   ton,
@@ -64,7 +65,7 @@ const readMethod = async (address, functionName, input={}) => {
   console.log(`Hashed secret as uint: ${BigInt(hashedSecret).toString(10)}`);
 
   const { value0: rawSecret } = await readMethod(htlcContractAddress, 'getRawSecret');
-  console.log(`Raw secret: ${rawSecret}`);
+  console.log(`Raw secret: ${(new BigNumber(rawSecret[0])).toString(16)}${(new BigNumber(rawSecret[1])).toString(16)}`);
   
   process.exit(0);
 })();

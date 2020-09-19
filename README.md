@@ -262,3 +262,33 @@ $ node scripts/withdraw.js
 ```
 
 ## Bitcoin contracts
+
+### Interact with Bitcoin HTLC smart contract
+
+#### Generate Segwit addresses
+
+```
+$ node generate_addr.js
+-------
+WIF private key:  cNRf95wXxCpiTbEZVaTZm399qgS6EDLPCPj8XCLe7U5thSuu3VGr
+Bitcoin Testnet address (native segwit):  tb1qp5svaqlq6c6cajxvtcyhmtu80ysk99cjmcc4n7
+```
+
+#### Generate HTLC address
+
+```
+node generate_htlc.js --secret <secret hex> --receiver <addr1> --payer <addr2> --timelock <now + 24/48h timestamp>
+-------
+secret hash <secret hash hex>
+Redeem script -  <redeem script hex>
+P2SH addr -  <p2sh addr>
+```
+
+#### Withdraw
+
+```
+$ node redeem_htlc.js --key <WIF private key of receiver addr of htlc> --tx_id <input tx hash> --index <output num in input tx that we spend> --receiver <receiver addr> --out_value <output value> --prev_tx <input tx hex> --redeem <redeem script hex> --secret <secret to unlock htlc>
+-------
+Redeem tx hex:
+<tx hex>
+```
