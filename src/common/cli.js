@@ -17,9 +17,9 @@ switch (cmd) {
 
     console.log(`Raw secret: ${secretGenerator.raw}`);
     console.log(`Raw secret as two uints: ${secretToUints(secretGenerator.raw)}`);
-    console.log(`Secret for Ethereum-ETH HTLC: ${secretGenerator.getSecretHash('ethereum')}`);
-    console.log(`Secret for Ethereum-ERC20 HTLC: ${secretGenerator.getSecretHash('ethereum-token')}`);
-    console.log(`Secret for Bitcoin HTLC: ${secretGenerator.getSecretHash('bitcoin')}`);
+    console.log(`Secret hash for Ethereum-ETH HTLC: ${secretGenerator.getSecretHash('ethereum')}`);
+    console.log(`Secret hash for Ethereum-ERC20 HTLC: ${secretGenerator.getSecretHash('ethereum-token')}`);
+    console.log(`Secret hash for Bitcoin HTLC: ${secretGenerator.getSecretHash('bitcoin')}`);
     console.log(`Secret hash as uint: ${secretHashToUint(secretGenerator.getSecretHash('ethereum'))}`);
     break;
   default:
