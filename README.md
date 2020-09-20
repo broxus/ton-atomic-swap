@@ -17,15 +17,15 @@ Besides the smart contracts, are also available documentation, tests, FAQ and vi
 
 ### Atomic swap between TON and ETH
 
-https://www.youtube.com/watch?v=sIiZ27aIK5I&feature=emb_logo&ab_channel=Broxus
+[![https://www.youtube.com/watch?v=sIiZ27aIK5I&feature=emb_logo&ab_channel=Broxus](https://www.youtube.com/watch?v=sIiZ27aIK5I&feature=emb_logo&ab_channel=Broxus)](https://www.youtube.com/watch?v=sIiZ27aIK5I&feature=emb_logo&ab_channel=Broxus)
 
 ### Atomic swap between TON and BTC
 
-https://www.youtube.com/watch?v=_QQa7DJ9pOo&feature=youtu.be&ab_channel=Broxus
+[![https://www.youtube.com/watch?v=_QQa7DJ9pOo&feature=youtu.be&ab_channel=Broxus](https://www.youtube.com/watch?v=_QQa7DJ9pOo&feature=youtu.be&ab_channel=Broxus)](https://www.youtube.com/watch?v=_QQa7DJ9pOo&feature=youtu.be&ab_channel=Broxus)
 
 ### Atomic swap between TON and USDT (ERC20)
 
-https://www.youtube.com/watch?v=T3_CzK7KMBo&feature=youtu.be&ab_channel=Broxus
+[![https://www.youtube.com/watch?v=T3_CzK7KMBo&feature=youtu.be&ab_channel=Broxus](https://www.youtube.com/watch?v=T3_CzK7KMBo&feature=youtu.be&ab_channel=Broxus)](https://www.youtube.com/watch?v=T3_CzK7KMBo&feature=youtu.be&ab_channel=Broxus)
 
 ## Architecture
 
