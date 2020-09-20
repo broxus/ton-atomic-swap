@@ -263,9 +263,43 @@ $ node scripts/withdraw.js
 
 ## Bitcoin contracts
 
-### Interact with Bitcoin HTLC smart contract
+Bitcoin is not capable of running fully functional smart-contracts, nevertheless bitcoin script is enough
+for implementing HTLC contract.  Below you can see implementation written in script, which is an array of 
+opcodes:
+```
+# check if given secret is preimage of secret_hash set in HTLC
+OP_SHA256, secret_hash, OP_EQUAL
+OP_IF
+    # check if person, who revealed secret is intended payee
+    OP_DUP, OP_HASH160, receiver_hashed_pubkey, OP_EQUALVERIFY, OP_CHECKSIG
+OP_ELSE
+    # check if timelock passed
+    timelock_hex, OP_CHECKLOCKTIMEVERIFY, OP_DROP
+    # check that person that requested refund is original payer
+    OP_DUP, OP_HASH160, backup_hashed_pubkey, OP_EQUALVERIFY, OP_CHECKSIG
+OP_ENDIF
+```
+To unlock it, receiver should provide unlocking script with following structure:
+```
+signature, pubKey, secret
+```
+And to make a refund, owner of backup address should provide next script after timelock passed:
+```
+signature, pubKey, wrong_secret
+```
+Its logic can be visualized in a flowchart:
+![Bitcoin script HTLC flow](./assets/img/btc_htlc_flowchart.png)
 
-#### Generate Segwit addresses
+
+### Interact with Bitcoin HTLC smart contract
+At this section you can find an instruction for working with Bitcoin HTLC contracts.
+All the interactions are implemented in form of cli application at src/bitcoin-contracts
+This CLI allows you to:
+ - generate address (p2wpkh address)
+ - generate HTLC contract address (p2sh address)
+ - redeem HTLC contract
+
+#### Generate Segwit address
 
 ```
 $ node generate_addr.js
@@ -287,7 +321,9 @@ P2SH addr -  <p2sh addr>
 #### Withdraw
 
 ```
-$ node redeem_htlc.js --key <WIF private key of receiver addr of htlc> --tx_id <input tx hash> --index <output num in input tx that we spend> --receiver <receiver addr> --out_value <output value> --prev_tx <input tx hex> --redeem <redeem script hex> --secret <secret to unlock htlc>
+$ node redeem_htlc.js --key <WIF private key of receiver addr of htlc> --tx_id <input tx hash>
+--index <output num in input tx that we spend> --receiver <receiver addr> --out_value <output value>
+--prev_tx <input tx hex> --redeem <redeem script hex> --secret <secret to unlock htlc>
 -------
 Redeem tx hex:
 <tx hex>
