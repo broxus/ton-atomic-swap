@@ -344,7 +344,7 @@ Redeem tx hex:
 
 ```
 $ node redeem_htlc_backup.js\
- --key <WIF private key of receiver addr of htlc>\
+ --key <WIF private key of backup addr of htlc>\
  --tx_id <input tx hash>\
  --index <output num in input tx that we spend>\
  --receiver <receiver addr>\
