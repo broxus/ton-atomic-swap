@@ -297,7 +297,8 @@ All the interactions are implemented in form of cli application at src/bitcoin-c
 This CLI allows you to:
  - generate address (p2wpkh address)
  - generate HTLC contract address (p2sh address)
- - redeem HTLC contract
+ - redeem HTLC contract (receiver)
+ - redeem HTLC contract (backup)
 
 #### Generate Segwit address
 
@@ -322,7 +323,7 @@ Redeem script -  <redeem script hex>
 P2SH addr -  <p2sh addr>
 ```
 
-#### Withdraw
+#### Withdraw (receiver)
 
 ```
 $ node redeem_htlc.js\
@@ -334,6 +335,22 @@ $ node redeem_htlc.js\
  --prev_tx <input tx hex>\
  --redeem <redeem script hex>\
  --secret <secret to unlock htlc>
+-------
+Redeem tx hex:
+<tx hex>
+```
+
+#### Withdraw (backup)
+
+```
+$ node redeem_htlc_backup.js\
+ --key <WIF private key of receiver addr of htlc>\
+ --tx_id <input tx hash>\
+ --index <output num in input tx that we spend>\
+ --receiver <receiver addr>\
+ --out_value <output value>\
+ --prev_tx <input tx hex>\
+ --redeem <redeem script hex>
 -------
 Redeem tx hex:
 <tx hex>
