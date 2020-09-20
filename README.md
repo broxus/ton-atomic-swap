@@ -69,7 +69,7 @@ In this case **Alice** need to wait until the time lock expires (in our case it'
 
 #### What if Bob have locked his assets but Alice refuses to continue and reveal the secret key?
 
-In this case **Bob** need to wait until the time lock expires (in our case it's 24 hours). After that, she can claim a refund - **X COIN1** will be sent to the backupAlice. Since the secret key is known only to **Alice**, no one could claim her assets during this period.
+In this case **Bob** need to wait until the time lock expires (in our case it's 24 hours). After that, he can claim a refund - **Y COIN2** will be sent to the backupBob. Since the secret key is known only to **Bob**, no one could claim his assets during this period.
 
 #### Can Alice claim Bob's assets and then refund her assets back?
 
