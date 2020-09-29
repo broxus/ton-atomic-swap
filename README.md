@@ -15,17 +15,11 @@ Besides the smart contracts, are also available documentation, tests, FAQ and vi
 
 ## Video tutorials
 
-### Atomic swap between TON and ETH
+- [Atomic swap between TON and ETH](https://www.youtube.com/watch?v=sIiZ27aIK5I&feature=emb_logo&ab_channel=Broxus)
 
-[![alt](https://yt-embed.herokuapp.com/embed?v=sIiZ27aIK5I)](https://www.youtube.com/watch?v=sIiZ27aIK5I&feature=emb_logo&ab_channel=Broxus)
+- [Atomic swap between TON and BTC](https://www.youtube.com/watch?v=_QQa7DJ9pOo&feature=youtu.be&ab_channel=Broxus)
 
-### Atomic swap between TON and BTC
-
-[![alt](https://yt-embed.herokuapp.com/embed?v=_QQa7DJ9pOo)](https://www.youtube.com/watch?v=_QQa7DJ9pOo&feature=youtu.be&ab_channel=Broxus)
-
-### Atomic swap between TON and USDT (ERC20)
-
-[![alt](https://yt-embed.herokuapp.com/embed?v=T3_CzK7KMBo)](https://www.youtube.com/watch?v=T3_CzK7KMBo&feature=youtu.be&ab_channel=Broxus)
+- [Atomic swap between TON and USDT (ERC20)](https://www.youtube.com/watch?v=T3_CzK7KMBo&feature=youtu.be&ab_channel=Broxus)
 
 ## Architecture
 
